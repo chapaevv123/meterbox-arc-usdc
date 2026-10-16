@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useAccount, useReadContract, useSwitchChain } from "wagmi";
 import { ConnectKitButton } from "connectkit";
 import { Loader2, Users, ShieldCheck } from "lucide-react";
-import { METERBOX, TARGET_CHAIN_ID } from "@/contracts/meterbox";
+import { METERBOX, TARGET_CHAIN_ID, TARGET_NETWORK_LABEL } from "@/contracts/meterbox";
 import { CustomerTicket } from "./CustomerTicket";
 import { ProviderSettle } from "./ProviderSettle";
 
@@ -109,7 +109,7 @@ export function SettlePanel() {
           className="w-full rounded-2xl py-3.5 text-sm font-semibold disabled:opacity-40"
           style={{ background: "var(--accent)", color: "#0d1b2f" }}
         >
-          {isSwitching ? "Switching…" : "Switch to Arc Testnet"}
+          {isSwitching ? "Switching…" : `Switch to ${TARGET_NETWORK_LABEL}`}
         </button>
       )}
 
@@ -147,7 +147,7 @@ export function SettlePanel() {
                     Switch to that wallet in MetaMask to submit settlements. If you do not
                     control that address, see the redeployment plan in{" "}
                     <code className="text-xs" style={{ color: "var(--ink-2)" }}>
-                      docs/mainnet-deployment-plan.md
+                      docs/SAFE_DEPLOYMENT.md
                     </code>{" "}
                     to deploy a new contract with your own wallet as provider.
                   </p>

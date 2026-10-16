@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSwitchChain, useReadContract } from "wagmi";
 import { erc20Abi } from "viem";
 import { Loader2, ExternalLink, CheckCircle2 } from "lucide-react";
-import { METERBOX, TARGET_CHAIN_ID, buildExplorerTx } from "@/contracts/meterbox";
+import { METERBOX, TARGET_CHAIN_ID, TARGET_NETWORK_LABEL, buildExplorerTx } from "@/contracts/meterbox";
 import { getUsdc } from "@/onchain-facts";
 import { parseAmount, usdcDecimalsFor, Amount } from "@/onchain-money";
 import { parseOnchainError } from "@/utils/errors";
@@ -157,7 +157,7 @@ export function DepositPanel() {
           className="w-full rounded-2xl py-3.5 text-sm font-semibold transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-40"
           style={{ background: "var(--accent)", color: "#0d1b2f" }}
         >
-          {isSwitching ? "Switching…" : "Switch to Arc Testnet"}
+          {isSwitching ? "Switching…" : `Switch to ${TARGET_NETWORK_LABEL}`}
         </button>
       ) : step === "approved" ? (
         <button

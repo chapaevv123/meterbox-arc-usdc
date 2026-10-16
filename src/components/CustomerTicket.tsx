@@ -11,7 +11,7 @@ import {
   Loader2, Copy, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { toHex } from "viem";
-import { METERBOX, TARGET_CHAIN_ID } from "@/contracts/meterbox";
+import { METERBOX, TARGET_CHAIN_ID, TARGET_NETWORK_LABEL } from "@/contracts/meterbox";
 import { parseAmount } from "@/onchain-money";
 import { randomBytes } from "@/utils/random";
 
@@ -177,7 +177,7 @@ export function CustomerTicket() {
         className="w-full rounded-2xl py-3.5 text-sm font-semibold disabled:opacity-40"
         style={{ background: "var(--accent)", color: "#0d1b2f" }}
       >
-        {isSwitching ? "Switching…" : "Switch to Arc Testnet"}
+        {isSwitching ? "Switching…" : `Switch to ${TARGET_NETWORK_LABEL}`}
       </button>
     );
   }

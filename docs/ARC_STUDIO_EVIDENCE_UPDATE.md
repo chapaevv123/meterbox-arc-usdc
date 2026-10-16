@@ -7,6 +7,8 @@ Prepared locally on 2026-10-16 for the existing MeterBox project. This file has 
 - Original export: `arc_studio_contract_deployment_guide_ao3lq2.zip`, SHA-256 `8170B40D729FCE364947177F7E7A38F974F9510153CA8BEBA5726924DBB06BC3`.
 - Existing Solidity business contract `contracts/MeterBox.sol` remains byte-for-byte unchanged from the export; SHA-256 `B8015EFB3EA95D27B5C244AE544DE7B745629D509B79DC8D7EA435744C8D1D3C`.
 - Existing Arc Studio Testnet deployment: [`0xc904569da992f343d0968454abe7486457a1a8f6`](https://explorer.testnet.arc.io/address/0xc904569da992f343d0968454abe7486457a1a8f6). Read-only RPC confirmed its owner is the Arc Studio platform deployer `0x5B12Ce46C7194aD57d143bC22847224047b1Ef42`.
+- The ZIP contains Studio-authored `contracts/MeterBox.sol`, `src/`, historical `docs/competition-evidence.md` and `docs/validation-report.md`, plus Studio deployment helpers and traces. The exact existing Studio project URL is **not present** in the ZIP or local project files. **OWNER ACTION REQUIRED:** open the existing app and record its URL; `https://studio.arc.io/` is only the Studio home page.
+- The public Git repository is a later local derivative. Its Foundry deployment script, added replay tests, frontend network safeguards, dependency lockfile and readiness documents were prepared after export. They are not evidence of a Studio Mainnet deployment.
 
 ## Local development evidence
 

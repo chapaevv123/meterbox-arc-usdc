@@ -65,7 +65,7 @@ export function StatusPanel() {
   return (
     <div className="space-y-2">
       <p className="text-xs mb-4" style={{ color: "var(--subtle)" }}>
-        Live contract state read directly from Arc Testnet. No simulation.
+        Live contract state read directly from {CHAIN.name}. No simulation.
       </p>
       {rows.map(({ icon, label, value, link, mono }) => (
         <div key={label} className="glass-inner rounded-xl px-4 py-3 flex items-center justify-between gap-3">

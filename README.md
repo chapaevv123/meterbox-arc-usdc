@@ -2,6 +2,12 @@
 
 Existing MeterBox project exported from Arc Studio. It holds prepaid ERC-20 USDC, accepts customer-signed EIP-712 usage tickets, lets the authorized provider settle usage, and lets customers withdraw unused balance. The original Arc Studio testnet deployment is [viewable on Arc Explorer](https://explorer.testnet.arc.io/address/0xc904569da992f343d0968454abe7486457a1a8f6). Arc Mainnet is **not deployed**.
 
+## Arc Studio provenance
+
+MeterBox originated in [Arc Studio](https://studio.arc.io/). The original export is preserved outside this repository at `Pulse/imports/arc_studio_contract_deployment_guide_ao3lq2.zip` (SHA-256 `8170B40D729FCE364947177F7E7A38F974F9510153CA8BEBA5726924DBB06BC3`). It contains the Studio-authored contract, tests, frontend, deployment notes and historical testnet evidence. `contracts/MeterBox.sol` remains byte-for-byte identical to that export (SHA-256 `B8015EFB3EA95D27B5C244AE544DE7B745629D509B79DC8D7EA435744C8D1D3C`). Local work after export changed the frontend, test coverage, deploy script, build setup and documentation; see [the provenance and evidence update](docs/ARC_STUDIO_EVIDENCE_UPDATE.md).
+
+**OWNER ACTION REQUIRED:** The exact URL of the existing Arc Studio project is absent from the export and local evidence. Add the URL here after opening that same project in the owner's Studio account. The Studio testnet deployment was made by the Studio platform account; local Foundry simulations and any later external Mainnet deployment must be identified separately.
+
 ## Local checks
 
 Requirements: Node.js, npm, Foundry `forge`, Solc 0.8.28. Arc-specific checks use [Arc Foundry](https://docs.arc.io/arc/tutorials/install-arc-foundry); its official prebuilt binaries require Linux/macOS or Windows WSL. The local preparation passed with Arc Foundry v0.8.0-2 in Ubuntu WSL.

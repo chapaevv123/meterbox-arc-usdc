@@ -9,6 +9,7 @@ export const ARC_MAINNET_CHAIN_ID = 5042;
 // Determine active network from env (defaults to testnet)
 const useMainnet = import.meta.env.VITE_USE_MAINNET === "true";
 export const TARGET_CHAIN_ID = useMainnet ? ARC_MAINNET_CHAIN_ID : ARC_TESTNET_CHAIN_ID;
+export const TARGET_NETWORK_LABEL = useMainnet ? "Arc Mainnet" : "Arc Testnet";
 
 // Contract address injected from env (set after mainnet deploy); falls back to testnet deployment
 const envAddress = import.meta.env.VITE_METERBOX_ADDRESS as string | undefined;

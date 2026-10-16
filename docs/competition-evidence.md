@@ -3,6 +3,8 @@
 > Prepared: 2026-10-15
 > Status: Testnet complete. Mainnet pending external deployment.
 
+> Historical Arc Studio export document. Publication steps and test counts below describe the Studio project at export time; use the current README and `ARC_STUDIO_EVIDENCE_UPDATE.md` for the locally prepared repository. The exact Studio project URL still requires the owner's confirmation.
+
 ---
 
 ## 1. Arc Studio Project

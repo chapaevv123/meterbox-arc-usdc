@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from "wagmi";
 import { Loader2, ExternalLink, CheckCircle2 } from "lucide-react";
-import { METERBOX, TARGET_CHAIN_ID, buildExplorerTx } from "@/contracts/meterbox";
+import { METERBOX, TARGET_CHAIN_ID, TARGET_NETWORK_LABEL, buildExplorerTx } from "@/contracts/meterbox";
 import { parseAmount, usdcDecimalsFor, Amount } from "@/onchain-money";
 import { parseOnchainError } from "@/utils/errors";
 
@@ -121,7 +121,7 @@ export function WithdrawPanel({ meterBalance }: { meterBalance: bigint | null })
         <button onClick={() => switchChain({ chainId: TARGET_CHAIN_ID })} disabled={isSwitching}
           className="w-full rounded-2xl py-3.5 text-sm font-semibold transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-40"
           style={{ background: "var(--accent)", color: "#0d1b2f" }}>
-          {isSwitching ? "Switching…" : "Switch to Arc Testnet"}
+          {isSwitching ? "Switching…" : `Switch to ${TARGET_NETWORK_LABEL}`}
         </button>
       ) : isSuccess ? (
         <button onClick={() => setAmount("")}
