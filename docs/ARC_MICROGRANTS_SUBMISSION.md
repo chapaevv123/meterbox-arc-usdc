@@ -11,7 +11,7 @@
 | Original Arc Studio project | https://studio.arc.io/app/205ea75f-eb5f-430e-94d6-cc0889e7ecd9 (owner-supplied; authenticated history capture pending) |
 | Public source | https://github.com/chapaevv123/meterbox-arc-usdc (confirm published `main` before submission) |
 | Public builder profile | https://github.com/chapaevv123 (verify profile page before submission) |
-| Live app URL | **PENDING** — use only a verified HTTPS static-site URL |
+| Public app URL | https://meterbox-arc-usdc.onrender.com/ — HTTPS 200 on 2026-10-16; current JS still shows Mainnet pending and the original Testnet address. This is a Testnet preview, **not** a live Mainnet payment demo. |
 | Arc Mainnet contract | **PENDING** — fill only from successful deployment receipt and code check |
 | Deployment transaction | **PENDING** — no transaction has been broadcast |
 | Mainnet demo transactions | **PENDING** — add only confirmed deposit, settle and withdraw receipts |
@@ -36,7 +36,7 @@ MeterBox lets a customer prepay USDC on Arc, sign a bounded and expiring EIP-712
 
 React/Vite + wagmi/viem/ConnectKit frontend → Arc RPC → non-upgradeable Solidity `MeterBox` → Arc USDC ERC-20 interface `0x3600000000000000000000000000000000000000`. Customer approves an exact deposit amount, deposits, signs a one-hour EIP-712 ticket, and retains withdrawal control over unused balance. The authorized Provider alone submits settlement. Owner controls Provider and fee settings with a two-day timelock. V2 tickets bind chain ID, verifying contract, per-customer nonce and provider epoch. The public Testnet build continues to use the original Studio v1 contract; the Mainnet build requires a separately verified Mainnet contract address.
 
-Known limits: EOA signatures only (no ERC-1271), a single configured Provider at a time, no external professional audit, wallet/hardware signing and real Mainnet transactions pending. The original Studio Testnet contract is owned by the Studio deployer, not the proposed Mainnet Owner. Later security changes and any Mainnet Foundry deployment are external to Studio. Do not describe a no-broadcast simulation as a real deployment.
+Known limits: EOA signatures only (no ERC-1271), a single configured Provider at a time, no external professional audit, wallet/hardware signing and real Mainnet transactions pending. The current public Render app is a Testnet preview; HTTPS delivery was checked, but a real-wallet Mainnet flow has not been verified. The original Studio Testnet contract is owned by the Studio deployer, not the proposed Mainnet Owner. Later security changes and any Mainnet Foundry deployment are external to Studio. Do not describe a no-broadcast simulation as a real deployment.
 
 ## Security and test evidence
 
