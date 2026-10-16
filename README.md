@@ -4,9 +4,11 @@ Existing MeterBox project exported from Arc Studio. It holds prepaid ERC-20 USDC
 
 ## Arc Studio provenance
 
-MeterBox originated in [Arc Studio](https://studio.arc.io/). The original export is preserved outside this repository at `Pulse/imports/arc_studio_contract_deployment_guide_ao3lq2.zip` (SHA-256 `8170B40D729FCE364947177F7E7A38F974F9510153CA8BEBA5726924DBB06BC3`). It contains the Studio-authored contract, tests, frontend, deployment notes and historical testnet evidence. `contracts/MeterBox.sol` remains byte-for-byte identical to that export (SHA-256 `B8015EFB3EA95D27B5C244AE544DE7B745629D509B79DC8D7EA435744C8D1D3C`). Local work after export changed the frontend, test coverage, deploy script, build setup and documentation; see [the provenance and evidence update](docs/ARC_STUDIO_EVIDENCE_UPDATE.md).
+MeterBox originated in [Arc Studio](https://studio.arc.io/). The original export is preserved outside this repository at `Pulse/imports/arc_studio_contract_deployment_guide_ao3lq2.zip` (SHA-256 `8170B40D729FCE364947177F7E7A38F974F9510153CA8BEBA5726924DBB06BC3`). It contains the Studio-authored contract, tests, frontend, deployment notes and historical testnet evidence. The original `contracts/MeterBox.sol` in the ZIP has SHA-256 `B8015EFB3EA95D27B5C244AE544DE7B745629D509B79DC8D7EA435744C8D1D3C` and is preserved in Git commit `0e0ce5c`; the current contract has later local security changes. Local work after export also changed the frontend, test coverage, deploy script, build setup and documentation; see [the provenance and evidence update](docs/ARC_STUDIO_EVIDENCE_UPDATE.md).
 
-**OWNER ACTION REQUIRED:** The exact URL of the existing Arc Studio project is absent from the export and local evidence. Add the URL here after opening that same project in the owner's Studio account. The Studio testnet deployment was made by the Studio platform account; local Foundry simulations and any later external Mainnet deployment must be identified separately.
+Original Studio project: [MeterBox in Arc Studio](https://studio.arc.io/app/205ea75f-eb5f-430e-94d6-cc0889e7ecd9) (URL supplied by the owner). The Studio testnet deployment was made by the Studio platform account; local Foundry simulations and any later external Mainnet deployment must be identified separately. The original ZIP does not include this project URL, so owner access to that same Studio project remains the way to verify its live history.
+
+The local Mainnet candidate adds a provider epoch to EIP-712 tickets. Executing a provider rotation increments the epoch and invalidates earlier tickets, including if the old provider is restored later. The original Studio Testnet contract still uses the v1 ticket schema. The frontend uses v1 on the existing Testnet deployment and v2 only for a future verified Mainnet deployment. See [build provenance](docs/ARC_STUDIO_BUILD_PROVENANCE.md) and [owner deployment checklist](docs/MAINNET_OWNER_DEPLOY_CHECKLIST.md).
 
 ## Local checks
 
@@ -21,6 +23,8 @@ forge test --summary
 
 The frontend defaults to the existing Arc Testnet contract. `npm run dev` serves a local preview. The static `dist/` output can be uploaded to a free static host after review. No backend, API token, or server-side key is required for read-only use.
 
+For a free Render Static Site, use [the exact setup values](docs/RENDER_FREE_STATIC_SITE.md): repository root, `npm ci && npm run build`, publish `dist`, and no environment variables before Mainnet deployment. The default public build explicitly says Mainnet deployment is pending.
+
 For a Mainnet frontend build, set `VITE_USE_MAINNET=true` and `VITE_METERBOX_ADDRESS` to a verified **deployed Mainnet MeterBox** address. The build rejects a missing, zero, or known Studio testnet address. The app uses Arc Mainnet chain ID 5042 and `https://rpc.mainnet.arc.io`. USDC ERC-20 amounts have 6 decimals; native gas USDC has 18. [Arc network settings](https://docs.arc.io/arc/references/connect-to-arc), [USDC address and decimals](https://docs.arc.io/arc/references/contract-addresses).
 
 ## Deployment preparation
@@ -29,6 +33,6 @@ See [SAFE_DEPLOYMENT.md](docs/SAFE_DEPLOYMENT.md). The checked-in Foundry script
 
 ## Security and scope
 
-The contract checks provider authorization, customer EIP-712 signatures, chain ID, verifying contract, ticket expiry, per-customer nonce reuse, balance limits and a timelocked fee cap. The current contract accepts only EOA signatures, including hardware-wallet EOAs; ERC-1271 smart-wallet signatures are not supported. Review the remaining Mainnet blockers in the Pulse readiness report before any deployment.
+The contract checks provider authorization, customer EIP-712 signatures, chain ID, verifying contract, ticket expiry, per-customer nonce reuse, balance limits and a timelocked fee cap. The Mainnet candidate also invalidates tickets when the provider changes. The current contract accepts only EOA signatures, including hardware-wallet EOAs; ERC-1271 smart-wallet signatures are not supported. Review the remaining Mainnet blockers in the Pulse readiness report before any deployment.
 
 Never commit `.env`, key files, logs, generated broadcast/cache files or Arc Studio credentials. Historical Studio deployment helpers remain only in the original export/local workspace and are excluded from this public repository. No Mainnet deployment or public site has been performed.
