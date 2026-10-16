@@ -15,7 +15,7 @@ This repository is the cleaned Arc Studio export of the existing MeterBox projec
 - Never request, print, store, commit, or pass a seed/private key through a command line or `.env`.
 - No Mainnet broadcast, real USDC movement, GitHub push, or hackathon submission without the owner's separate approval.
 - Arc Studio-only scripts and old export guides are retained locally but excluded from Git. Use `docs/SAFE_DEPLOYMENT.md` for current steps.
-- A standard Forge dry-run checks constructor and EVM execution but its gas estimate labels Arc's USDC as ETH; Arc Foundry is needed for Arc-native fee checks.
+- Official Arc Foundry v0.8.0-2 passed build, tests, and Mainnet dry-run in Ubuntu WSL. Its Mainnet fee line still says ETH although Arc gas is native USDC; independently verify the actual USDC fee before an approved broadcast.
 - `VITE_USE_MAINNET=true` requires an explicitly configured, independently verified Mainnet contract address. Never use the Studio testnet contract on Mainnet.
 
 ## Checks

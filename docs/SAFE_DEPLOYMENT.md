@@ -25,7 +25,7 @@ forge script contracts/script/DeployMeterBox.s.sol:DeployMeterBox `
   --sender 0x6Fa3659a15e9264E43EC67Fe4bB5d31D38109A42
 ```
 
-The simulation must show chain ID 5042 and the four constructor values above. **Do not use the displayed simulated contract address as a deployed address.** Standard Forge reports Arc gas in an ETH-labelled line; that label is wrong for Arc. Before a live action, repeat Arc-specific fee/runtime checks using [Arc Foundry](https://docs.arc.io/arc/tutorials/install-arc-foundry) in WSL/Linux/macOS. Windows PowerShell alone is insufficient for the official Arc Foundry binary.
+The simulation must show chain ID 5042 and the four constructor values above. **Do not use the displayed simulated contract address as a deployed address.** Arc Foundry v0.8.0-2 in Ubuntu WSL passed the local tests and Mainnet dry-run. Its CLI still displays the estimated native gas amount with an `ETH` label on Mainnet; Arc's gas asset is USDC. Treat the estimate as indicative only and verify the actual USDC fee in the hardware wallet before any approved live action. Windows PowerShell alone cannot run the official Arc Foundry Linux binary.
 
 ## Owner gate before any live deployment
 

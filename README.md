@@ -4,7 +4,7 @@ Existing MeterBox project exported from Arc Studio. It holds prepaid ERC-20 USDC
 
 ## Local checks
 
-Requirements: Node.js, npm, Foundry `forge`, Solc 0.8.28. On Arc-specific execution use [Arc Foundry](https://docs.arc.io/arc/tutorials/install-arc-foundry); its official prebuilt binaries require Linux/macOS or Windows WSL.
+Requirements: Node.js, npm, Foundry `forge`, Solc 0.8.28. Arc-specific checks use [Arc Foundry](https://docs.arc.io/arc/tutorials/install-arc-foundry); its official prebuilt binaries require Linux/macOS or Windows WSL. The local preparation passed with Arc Foundry v0.8.0-2 in Ubuntu WSL.
 
 ```powershell
 npm ci

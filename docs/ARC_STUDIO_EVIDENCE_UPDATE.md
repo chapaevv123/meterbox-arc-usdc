@@ -13,6 +13,7 @@ Prepared locally on 2026-10-16 for the existing MeterBox project. This file has 
 - Restored missing `forge-std` source from official v1.17.0 release and installed frontend dependencies from an npm lockfile.
 - `forge build` with Solc 0.8.28: PASS.
 - `forge test --summary`: 38 unit/fuzz tests PASS; one invariant suite PASS with two invariants, 256 runs and 128,000 calls. Added two replay checks for chain ID and verifying-contract binding.
+- Official Arc Foundry v0.8.0-2 in Ubuntu WSL: build PASS; 38 unit/fuzz and 2 invariant tests PASS; Mainnet no-broadcast simulation PASS. The release archive checksum was verified before execution.
 - `npm ci` followed by `npm run build`: PASS. Static site preview returned HTTP 200 locally.
 - Mainnet frontend build without a verified contract address: correctly REFUSED.
 - Standard Forge no-broadcast simulations on Arc Testnet and Mainnet: PASS for constructor values and chain IDs. These simulations sent no transaction and their displayed contract addresses are **not deployed**.
@@ -21,7 +22,7 @@ Prepared locally on 2026-10-16 for the existing MeterBox project. This file has 
 
 ## Pending evidence
 
-- Arc Foundry runtime/fee validation in WSL/Linux/macOS.
+- Actual USDC fee verification in an approved hardware-wallet transaction preview; the Arc Foundry dry-run still labels Mainnet gas as `ETH`.
 - Hardware signer address check and explicit owner approval before any live Mainnet action.
 - Mainnet contract address, transaction receipt, verified source and live role reads: none yet.
 - Sync this evidence to the **existing** MeterBox Arc Studio app after its owner opens the project; do not create a new app or submit a Microgrants application as part of this preparation.
