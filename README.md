@@ -1,6 +1,6 @@
 # MeterBox — usage-based USDC billing on Arc
 
-Existing MeterBox project exported from Arc Studio. It holds prepaid ERC-20 USDC, accepts customer-signed EIP-712 usage tickets, lets the authorized provider settle usage, and lets customers withdraw unused balance. The original Arc Studio testnet deployment is [viewable on Arc Explorer](https://explorer.testnet.arc.io/address/0xc904569da992f343d0968454abe7486457a1a8f6). The later, owner-controlled [Arc Mainnet contract](https://explorer.arc.io/address/0xb394b66f340be231269c53aabb773303aface683) was deployed in [transaction 0x828a…6320c](https://explorer.arc.io/tx/0x828a98226f7deb45312007c176f943683379ac9763ffdbe30cdec7fc3746320c).
+Existing MeterBox project exported from Arc Studio. It holds prepaid ERC-20 USDC, accepts customer-signed EIP-712 usage tickets, lets the authorized provider settle usage, and lets customers withdraw unused balance. The original Arc Studio testnet deployment is [viewable on Arc Explorer](https://explorer.testnet.arc.io/address/0xc904569da992f343d0968454abe7486457a1a8f6). The active [Arc Mainnet V2 contract](https://explorer.arc.io/address/0xc8231E59bb633A3C9fdb7Eb16114cbbE33D7600f) was deployed in [transaction 0x30a1…436c8](https://explorer.arc.io/tx/0x30a1569c4c220590de3f9d64e95d7ae8069f406815b6d04509069f21e0e436c8). The [previous Mainnet contract](https://explorer.arc.io/address/0xb394b66f340be231269c53aabb773303aface683) must not receive new deposits.
 
 ## Arc Studio provenance
 
@@ -34,11 +34,11 @@ forge test --summary
 
 The existing [Render Static Site](https://meterbox-arc-usdc.onrender.com/) builds from this repository with `npm ci && npm run build` and publishes `dist`. Its live Mainnet configuration must be checked after each deploy; the Git source alone does not prove what Render is serving.
 
-The checked-in `.env.production` sets `VITE_USE_MAINNET=true` and `VITE_METERBOX_ADDRESS=0xb394b66f340be231269c53aabb773303aface683`. The build rejects a missing, zero, or known Studio testnet address in Mainnet mode. The app uses Arc Mainnet chain ID 5042 and `https://rpc.mainnet.arc.io`. USDC ERC-20 amounts have 6 decimals; native gas USDC has 18. [Arc network settings](https://docs.arc.io/arc/references/connect-to-arc), [USDC address and decimals](https://docs.arc.io/arc/references/contract-addresses).
+The checked-in `.env.production` sets `VITE_USE_MAINNET=true` and `VITE_METERBOX_ADDRESS=0xc8231E59bb633A3C9fdb7Eb16114cbbE33D7600f`. The build rejects a missing, zero, or known Studio testnet address in Mainnet mode. The app uses Arc Mainnet chain ID 5042 and `https://rpc.mainnet.arc.io`. USDC ERC-20 amounts have 6 decimals; native gas USDC has 18. [Arc network settings](https://docs.arc.io/arc/references/connect-to-arc), [USDC address and decimals](https://docs.arc.io/arc/references/contract-addresses).
 
 ## Deployment preparation
 
-See [SAFE_DEPLOYMENT.md](docs/SAFE_DEPLOYMENT.md). The checked-in Foundry script fixes the owner, provider, USDC token and 500 bps maximum fee. It never reads a private key. The owner signed the Mainnet deployment through Rabby; it was not an Arc Studio deployment. Read-only Arc RPC verification found receipt status 1, matching creation/runtime bytecode, Owner `0x6Fa3659a15e9264E43EC67Fe4bB5d31D38109A42`, Provider `0x765fb7e6a0BdDDc29f57eeCE34AEda0Fb318805d`, USDC `0x3600000000000000000000000000000000000000`, cap 500 bps and chain 5042. Deployment gas was `1,450,746` at `21.489 gwei`, costing `0.031175080794` native USDC.
+See [SAFE_DEPLOYMENT.md](docs/SAFE_DEPLOYMENT.md). The checked-in Foundry script fixes the owner, provider, USDC token and 500 bps maximum fee. It never reads a private key. The owner signed the V2 Mainnet deployment through Rabby; it was not an Arc Studio deployment. Read-only Arc RPC verification found receipt status 1, matching creation/runtime bytecode, Owner `0x6Fa3659a15e9264E43EC67Fe4bB5d31D38109A42`, Provider `0x765fb7e6a0BdDDc29f57eeCE34AEda0Fb318805d`, USDC `0x3600000000000000000000000000000000000000`, cap 500 bps and chain 5042. Deployment gas was `1,450,530` at `21.49 gwei`, costing `0.0311718897` native USDC. [Sourcify](https://repo.sourcify.dev/5042/0xc8231E59bb633A3C9fdb7Eb16114cbbE33D7600f) reports exact creation and runtime matches.
 
 ## Security and scope
 
