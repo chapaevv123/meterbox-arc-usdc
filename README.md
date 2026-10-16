@@ -1,6 +1,6 @@
 # MeterBox — usage-based USDC billing on Arc
 
-Existing MeterBox project exported from Arc Studio. It holds prepaid ERC-20 USDC, accepts customer-signed EIP-712 usage tickets, lets the authorized provider settle usage, and lets customers withdraw unused balance. The original Arc Studio testnet deployment is [viewable on Arc Explorer](https://explorer.testnet.arc.io/address/0xc904569da992f343d0968454abe7486457a1a8f6). Arc Mainnet is **not deployed**.
+Existing MeterBox project exported from Arc Studio. It holds prepaid ERC-20 USDC, accepts customer-signed EIP-712 usage tickets, lets the authorized provider settle usage, and lets customers withdraw unused balance. The original Arc Studio testnet deployment is [viewable on Arc Explorer](https://explorer.testnet.arc.io/address/0xc904569da992f343d0968454abe7486457a1a8f6). The later, owner-controlled [Arc Mainnet contract](https://explorer.arc.io/address/0xb394b66f340be231269c53aabb773303aface683) was deployed in [transaction 0x828a…6320c](https://explorer.arc.io/tx/0x828a98226f7deb45312007c176f943683379ac9763ffdbe30cdec7fc3746320c).
 
 ## Arc Studio provenance
 
@@ -17,7 +17,7 @@ Original Studio project: [MeterBox in Arc Studio](https://studio.arc.io/app/205e
 
 The Studio report timestamps deployment at `2026-10-15T23:27:25.834Z`; the on-chain block timestamp is `2026-10-15T23:27:23Z`. The original Testnet `owner()` and `provider()` are both the Studio platform address `0x5B12Ce46C7194aD57d143bC22847224047b1Ef42`. EIP-712 ticket signatures are off-chain. The published Solidity includes later security changes; no bytecode identity with the Studio deployment is claimed.
 
-The local Mainnet candidate adds a provider epoch to EIP-712 tickets. Executing a provider rotation increments the epoch and invalidates earlier tickets, including if the old provider is restored later. The original Studio Testnet contract still uses the v1 ticket schema. The frontend uses v1 on the existing Testnet deployment and v2 only for a future verified Mainnet deployment. See [build provenance](docs/ARC_STUDIO_BUILD_PROVENANCE.md) and [owner deployment checklist](docs/MAINNET_OWNER_DEPLOY_CHECKLIST.md).
+The deployed Mainnet version adds a provider epoch to EIP-712 tickets. Executing a provider rotation increments the epoch and invalidates earlier tickets, including if the old provider is restored later. The original Studio Testnet contract still uses the v1 ticket schema. The frontend uses v1 in local Testnet development and v2 in the production Mainnet build. See [build provenance](docs/ARC_STUDIO_BUILD_PROVENANCE.md) and [owner deployment checklist](docs/MAINNET_OWNER_DEPLOY_CHECKLIST.md).
 
 ## Local checks
 
@@ -30,18 +30,18 @@ forge build
 forge test --summary
 ```
 
-The frontend defaults to the existing Arc Testnet contract. `npm run dev` serves a local preview. The static `dist/` output can be uploaded to a free static host after review. No backend, API token, or server-side key is required for read-only use.
+`npm run dev` defaults to the existing Arc Testnet contract. Production builds use the public settings in `.env.production`: Arc Mainnet `5042` and the independently verified deployed address. No backend, API token, or server-side key is required for read-only use.
 
-For a free Render Static Site, use [the exact setup values](docs/RENDER_FREE_STATIC_SITE.md): repository root, `npm ci && npm run build`, publish `dist`, and no environment variables before Mainnet deployment. The default public build explicitly says Mainnet deployment is pending.
+The existing [Render Static Site](https://meterbox-arc-usdc.onrender.com/) builds from this repository with `npm ci && npm run build` and publishes `dist`. Its live Mainnet configuration must be checked after each deploy; the Git source alone does not prove what Render is serving.
 
-For a Mainnet frontend build, set `VITE_USE_MAINNET=true` and `VITE_METERBOX_ADDRESS` to a verified **deployed Mainnet MeterBox** address. The build rejects a missing, zero, or known Studio testnet address. The app uses Arc Mainnet chain ID 5042 and `https://rpc.mainnet.arc.io`. USDC ERC-20 amounts have 6 decimals; native gas USDC has 18. [Arc network settings](https://docs.arc.io/arc/references/connect-to-arc), [USDC address and decimals](https://docs.arc.io/arc/references/contract-addresses).
+The checked-in `.env.production` sets `VITE_USE_MAINNET=true` and `VITE_METERBOX_ADDRESS=0xb394b66f340be231269c53aabb773303aface683`. The build rejects a missing, zero, or known Studio testnet address in Mainnet mode. The app uses Arc Mainnet chain ID 5042 and `https://rpc.mainnet.arc.io`. USDC ERC-20 amounts have 6 decimals; native gas USDC has 18. [Arc network settings](https://docs.arc.io/arc/references/connect-to-arc), [USDC address and decimals](https://docs.arc.io/arc/references/contract-addresses).
 
 ## Deployment preparation
 
-See [SAFE_DEPLOYMENT.md](docs/SAFE_DEPLOYMENT.md). The checked-in Foundry script fixes the owner, provider, USDC token and 500 bps maximum fee. It never reads a private key. A dry-run uses no `--broadcast`; a future real deployment needs a separate owner approval and hardware-wallet confirmation.
+See [SAFE_DEPLOYMENT.md](docs/SAFE_DEPLOYMENT.md). The checked-in Foundry script fixes the owner, provider, USDC token and 500 bps maximum fee. It never reads a private key. The owner signed the Mainnet deployment through Rabby; it was not an Arc Studio deployment. Read-only Arc RPC verification found receipt status 1, matching creation/runtime bytecode, Owner `0x6Fa3659a15e9264E43EC67Fe4bB5d31D38109A42`, Provider `0x765fb7e6a0BdDDc29f57eeCE34AEda0Fb318805d`, USDC `0x3600000000000000000000000000000000000000`, cap 500 bps and chain 5042. Deployment gas was `1,450,746` at `21.489 gwei`, costing `0.031175080794` native USDC.
 
 ## Security and scope
 
-The contract checks provider authorization, customer EIP-712 signatures, chain ID, verifying contract, ticket expiry, per-customer nonce reuse, balance limits and a timelocked fee cap. The Mainnet candidate also invalidates tickets when the provider changes. The current contract accepts only EOA signatures, including hardware-wallet EOAs; ERC-1271 smart-wallet signatures are not supported. Review the remaining Mainnet blockers in the Pulse readiness report before any deployment.
+The contract checks provider authorization, customer EIP-712 signatures, chain ID, verifying contract, ticket expiry, per-customer nonce reuse, balance limits and a timelocked fee cap. The deployed Mainnet contract also invalidates tickets when the provider changes. It accepts only EOA signatures, including hardware-wallet EOAs; ERC-1271 smart-wallet signatures are not supported. Review wallet security warnings and complete read-only wallet checks before any real USDC payment.
 
-Never commit `.env`, key files, logs, generated broadcast/cache files or Arc Studio credentials. Historical Studio deployment helpers remain only in the original export/local workspace and are excluded from this public repository. No Mainnet deployment or public site has been performed.
+Never commit private `.env` files, key files, logs, generated broadcast/cache files or Arc Studio credentials. `.env.production` contains only public build settings. Historical Studio deployment helpers remain only in the original export/local workspace and are excluded from this public repository. No real customer deposit, settlement or withdrawal has been verified on Mainnet yet.
