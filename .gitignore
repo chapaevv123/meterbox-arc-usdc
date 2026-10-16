@@ -1,0 +1,51 @@
+# Local credentials and user-specific configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.sk
+*.seed
+*.keystore
+*.mnemonic
+secrets/
+
+# Dependencies and generated output
+node_modules/
+.deps/
+dist/
+contracts/out/
+contracts/cache/
+contracts/contract-metadata/
+broadcast/
+cache/
+out/
+coverage/
+*.tsbuildinfo
+
+# Runtime logs and Studio sandbox traces
+*.log
+*.jsonl
+traces/
+logs/
+
+# Arc Studio-only deployment helpers; original source remains in the export ZIP
+scripts/compass-deploy.ts
+scripts/compass-deploy-helpers.ts
+scripts/self-deploy.ts
+scripts/check.sh
+scripts/fetch-abi.ts
+contracts/script/Create2Factory.sol
+contracts/script/DeployCreate2.s.sol
+src/console-capture.ts
+src/tracing.ts
+.bun-version
+bun.lock
+
+# Superseded export instructions retained locally as evidence
+docs/DEPLOY_WINDOWS.md
+docs/env-example.md
+docs/export-package.md
+docs/mainnet-deployment-plan.md
+docs/mainnet-readiness-audit.md
+docs/meterbox-spec.md
