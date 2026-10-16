@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run build",
     "contracts:build": "forge build",
-    "contracts:test": "forge test"
+    "contracts:test": "forge test",
+    "check:ticket": "node scripts/check_ticket_compat.mjs",
+    "check:abi": "python scripts/check_abi.py"
   },
   "dependencies": {
     "@openzeppelin/contracts": "5.1.0",

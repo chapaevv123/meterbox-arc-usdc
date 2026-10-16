@@ -1,4 +1,4 @@
-"""Fail closed on common credential leaks in the staged public repository.
+"""Fail closed on common credential leaks in public working-tree candidates.
 
 The scanner prints only file paths and rule names, never matched values.
 """
@@ -29,7 +29,9 @@ ASSIGNMENT = re.compile(
 
 
 def main() -> int:
-    names = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT).split(b"\0")
+    names = subprocess.check_output(
+        ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"], cwd=ROOT
+    ).split(b"\0")
     findings: list[tuple[str, str]] = []
     checked = 0
     for raw in names:
@@ -55,7 +57,7 @@ def main() -> int:
             break
     for name, label in sorted(set(findings)):
         print(f"{name}: {label}")
-    print(f"staged files scanned: {checked}; findings: {len(set(findings))}")
+    print(f"public working files scanned: {checked}; findings: {len(set(findings))}")
     return 1 if findings else 0
 
 

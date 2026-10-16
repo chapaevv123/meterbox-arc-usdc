@@ -6,36 +6,19 @@
  * serialised ticket JSON and lets the customer copy it to hand to the provider.
  */
 import { useState } from "react";
-import { useAccount, useSignTypedData, useSwitchChain } from "wagmi";
+import { useAccount, useReadContract, useSignTypedData, useSwitchChain } from "wagmi";
 import {
   Loader2, Copy, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { toHex } from "viem";
 import { METERBOX, TARGET_CHAIN_ID, TARGET_NETWORK_LABEL } from "@/contracts/meterbox";
+import { EIP712_DOMAIN, EIP712_TYPES, TICKET_IS_V2, TICKET_VERSION, ticketMessage } from "@/contracts/ticket";
 import { parseAmount } from "@/onchain-money";
 import { randomBytes } from "@/utils/random";
 
-// EIP-712 domain + types — must mirror the contract exactly.
-const EIP712_DOMAIN = {
-  name: "MeterBox",
-  version: "1",
-  chainId: TARGET_CHAIN_ID,
-  verifyingContract: METERBOX.address,
-} as const;
-
-const EIP712_TYPES = {
-  UsageTicket: [
-    { name: "customer",      type: "address" },
-    { name: "amount",        type: "uint256" },
-    { name: "spendingLimit", type: "uint256" },
-    { name: "deadline",      type: "uint256" },
-    { name: "nonce",         type: "bytes32" },
-  ],
-} as const;
-
 /** The serialised ticket handed from customer to provider. */
 export interface SignedTicket {
-  version:          "MeterBox-v1";
+  version:          "MeterBox-v1" | "MeterBox-v2";
   chainId:          number;
   contract:         string;
   customer:         string;
@@ -43,6 +26,7 @@ export interface SignedTicket {
   spendingLimit:    string;   // µUSDC decimal string
   deadline:         string;   // unix seconds decimal string
   nonce:            string;   // 0x hex bytes32
+  providerEpoch?:   string;   // v2 only; invalidates tickets after provider rotation
   signature:        string;   // 0x hex EIP-712 sig
   /** Human-readable amounts for display only — not verified on-chain. */
   amountDisplay:    string;
@@ -56,6 +40,13 @@ export function CustomerTicket() {
   const { address, chainId, isConnected } = useAccount();
   const { switchChain, isPending: isSwitching } = useSwitchChain();
   const { signTypedDataAsync } = useSignTypedData();
+  const { data: providerEpochRaw } = useReadContract({
+    ...METERBOX,
+    functionName: "providerEpoch",
+    chainId: TARGET_CHAIN_ID,
+    query: { enabled: TICKET_IS_V2 && isConnected },
+  });
+  const providerEpoch = providerEpochRaw as bigint | undefined;
 
   const [step, setStep]                 = useState<SignStep>("idle");
   const [amount, setAmount]             = useState("");
@@ -83,6 +74,9 @@ export function CustomerTicket() {
     if (parsedLimit.raw < parsedAmount.raw) {
       setErrorMsg("Spending limit must be at least the charge amount."); return;
     }
+    if (TICKET_IS_V2 && providerEpoch === undefined) {
+      setErrorMsg("Mainnet provider epoch unavailable. Check the deployed contract and RPC."); return;
+    }
 
     const ticketDeadline = BigInt(Math.floor(Date.now() / 1000) + 3600); // 1 hour
     const ticketNonce    = toHex(randomBytes(32));
@@ -93,17 +87,18 @@ export function CustomerTicket() {
         domain:      EIP712_DOMAIN,
         types:       EIP712_TYPES,
         primaryType: "UsageTicket",
-        message: {
+        message: ticketMessage({
           customer:      address,
           amount:        parsedAmount.raw,
           spendingLimit: parsedLimit.raw,
           deadline:      ticketDeadline,
           nonce:         ticketNonce,
-        },
+          providerEpoch,
+        }),
       });
 
       const signed: SignedTicket = {
-        version:       "MeterBox-v1",
+        version:       TICKET_VERSION,
         chainId:       TARGET_CHAIN_ID,
         contract:      METERBOX.address,
         customer:      address,
@@ -111,6 +106,7 @@ export function CustomerTicket() {
         spendingLimit: parsedLimit.raw.toString(),
         deadline:      ticketDeadline.toString(),
         nonce:         ticketNonce,
+        ...(TICKET_IS_V2 ? { providerEpoch: providerEpoch!.toString() } : {}),
         signature:     sig,
         amountDisplay:  amount,
         limitDisplay:   spendingLimit,
@@ -142,6 +138,7 @@ export function CustomerTicket() {
       spendingLimit: ticket.spendingLimit,
       deadline:      ticket.deadline,
       nonce:         ticket.nonce,
+      ...(ticket.providerEpoch !== undefined ? { providerEpoch: ticket.providerEpoch } : {}),
       signature:     ticket.signature,
     };
     await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
@@ -270,6 +267,7 @@ export function CustomerTicket() {
               ["Customer",  `${ticket.customer.slice(0,10)}…${ticket.customer.slice(-6)}`],
               ["Contract",  `${ticket.contract.slice(0,10)}…${ticket.contract.slice(-6)}`],
               ["Chain ID",  ticket.chainId.toString()],
+              ...(ticket.providerEpoch !== undefined ? [["Provider epoch", ticket.providerEpoch]] : []),
             ].map(([k, v]) => (
               <div key={k} className="flex items-center justify-between gap-2">
                 <span className="text-xs" style={{ color: "var(--subtle)" }}>{k}</span>
@@ -305,6 +303,7 @@ export function CustomerTicket() {
                   spendingLimit: ticket.spendingLimit,
                   deadline:      ticket.deadline,
                   nonce:         ticket.nonce,
+                  ...(ticket.providerEpoch !== undefined ? { providerEpoch: ticket.providerEpoch } : {}),
                   signature:     ticket.signature,
                 }, null, 2)}
               </pre>
@@ -350,7 +349,7 @@ export function CustomerTicket() {
       ) : (
         <button
           onClick={() => { void handleSign(); }}
-          disabled={isBusy}
+          disabled={isBusy || (TICKET_IS_V2 && providerEpoch === undefined)}
           className="w-full rounded-2xl py-3.5 text-sm font-semibold disabled:opacity-40 transition-all hover:scale-[1.01] active:scale-[0.99]"
           style={{ background: "var(--accent)", color: "#0d1b2f" }}
         >
@@ -358,7 +357,7 @@ export function CustomerTicket() {
             ? <span className="flex items-center justify-center gap-2">
                 <Loader2 className="size-4 animate-spin" />Signing…
               </span>
-            : "Sign Usage Ticket"
+            : TICKET_IS_V2 && providerEpoch === undefined ? "Waiting for Mainnet contract…" : "Sign Usage Ticket"
           }
         </button>
       )}

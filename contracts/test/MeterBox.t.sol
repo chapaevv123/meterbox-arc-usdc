@@ -620,6 +620,42 @@ contract MeterBoxTest is Test {
         vm.stopPrank();
 
         assertEq(box.provider(), newProvider, "provider not updated");
+        assertEq(box.providerEpoch(), 1, "provider epoch not advanced");
+    }
+
+    function test_ProviderRotation_InvalidatesOldTicketEvenAfterReturn() public {
+        address nextProvider = makeAddr("rotatedProvider");
+        _deposit(100e6);
+        bytes32 nonce = keccak256("rotation-replay");
+        MeterBox.SettleParams memory oldTicket = _buildAndSign(20e6, 20e6, block.timestamp + 7 days, nonce);
+        bytes32 oldDigest = box.getTypedDataHash(oldTicket);
+
+        vm.prank(owner);
+        box.proposeProvider(nextProvider);
+        vm.warp(block.timestamp + 2 days);
+        vm.prank(owner);
+        box.executeProvider();
+
+        assertEq(box.providerEpoch(), 1);
+        assertNotEq(box.getTypedDataHash(oldTicket), oldDigest, "digest must change on rotation");
+        vm.prank(nextProvider);
+        vm.expectPartialRevert(MeterBox.InvalidSignature.selector);
+        box.settle(oldTicket);
+        assertEq(box.balances(customer), 100e6, "old ticket changed balance");
+        assertFalse(box.usedNonces(customer, nonce), "failed ticket consumed nonce");
+
+        MeterBox.SettleParams memory newTicket = _buildAndSign(20e6, 20e6, block.timestamp + 3 days, nonce);
+        vm.prank(nextProvider);
+        box.settle(newTicket);
+        assertEq(box.balances(customer), 80e6, "new-epoch ticket did not settle");
+
+        vm.prank(owner);
+        box.proposeProvider(providerAddr);
+        vm.warp(block.timestamp + 2 days);
+        vm.prank(owner);
+        box.executeProvider();
+        assertEq(box.providerEpoch(), 2);
+        assertNotEq(box.getTypedDataHash(oldTicket), oldDigest, "return rotation restored old digest");
     }
 
     function test_Revert_Timelock_ExecuteTooEarly() public {

@@ -63,6 +63,11 @@ export default function App() {
 
       {/* Main content */}
       <main className="max-w-lg mx-auto px-4 py-6 space-y-5">
+        {CHAIN.isTestnet && (
+          <p className="rounded-xl px-3 py-2 text-center text-xs" style={{ color: "var(--ink-2)", background: "var(--surface-strong)", border: "1px solid var(--border)" }}>
+            Arc Mainnet deployment pending. This preview uses Arc Testnet and test USDC only.
+          </p>
+        )}
         {/* Hero balance card */}
         <div className="glass-card rounded-3xl p-5">
           <div className="flex items-center justify-between mb-3">

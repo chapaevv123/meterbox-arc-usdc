@@ -12,6 +12,7 @@ secrets/
 
 # Dependencies and generated output
 node_modules/
+__pycache__/
 .deps/
 dist/
 contracts/out/

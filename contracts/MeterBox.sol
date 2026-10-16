@@ -20,14 +20,15 @@ contract MeterBox is Ownable2Step, ReentrancyGuard {
     bytes32 private constant _EIP712_DOMAIN_TYPEHASH =
         keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
     bytes32 private constant _NAME_HASH = keccak256(bytes("MeterBox"));
-    bytes32 private constant _VERSION_HASH = keccak256(bytes("1"));
+    bytes32 private constant _VERSION_HASH = keccak256(bytes("2"));
     bytes32 private constant _USAGE_TICKET_TYPEHASH =
-        keccak256("UsageTicket(address customer,uint256 amount,uint256 spendingLimit,uint256 deadline,bytes32 nonce)");
+        keccak256("UsageTicket(address customer,uint256 amount,uint256 spendingLimit,uint256 deadline,bytes32 nonce,uint256 providerEpoch)");
 
     mapping(address => uint256) public balances;
     mapping(address => mapping(bytes32 => bool)) public usedNonces;
 
     address public provider;
+    uint256 public providerEpoch;
     address public feeRecipient;
     uint256 public feeRateBps;
 
@@ -195,6 +196,7 @@ contract MeterBox is Ownable2Step, ReentrancyGuard {
 
         address oldProvider = provider;
         provider = pending.addr;
+        providerEpoch += 1;
         delete pendingProvider;
 
         emit ProviderUpdated(oldProvider, pending.addr);
@@ -295,7 +297,8 @@ contract MeterBox is Ownable2Step, ReentrancyGuard {
                 params.amount,
                 params.spendingLimit,
                 params.deadline,
-                params.nonce
+                params.nonce,
+                providerEpoch
             )
         );
 
