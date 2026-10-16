@@ -240,6 +240,57 @@ contract MeterBoxTest is Test {
         vm.stopPrank();
     }
 
+    /// @dev Sign a standard EIP-712 digest independently of MeterBox.getTypedDataHash.
+    function test_EIP712_StandardSignature_FullPaymentFlow() public {
+        uint256 depositAmount = 200_000;
+        uint256 charge = 50_000;
+        bytes32 nonce = keccak256("standard-eip712-regression");
+        uint256 deadline = block.timestamp + 1 hours;
+        _deposit(depositAmount);
+
+        MeterBox.SettleParams memory params = MeterBox.SettleParams({
+            customer: customer,
+            amount: charge,
+            spendingLimit: charge,
+            deadline: deadline,
+            nonce: nonce,
+            signature: ""
+        });
+        bytes32 domainSeparator = keccak256(abi.encode(
+            keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+            keccak256(bytes("MeterBox")),
+            keccak256(bytes("2")),
+            block.chainid,
+            address(box)
+        ));
+        bytes32 structHash = keccak256(abi.encode(
+            keccak256("UsageTicket(address customer,uint256 amount,uint256 spendingLimit,uint256 deadline,bytes32 nonce,uint256 providerEpoch)"),
+            customer,
+            charge,
+            charge,
+            deadline,
+            nonce,
+            uint256(0)
+        ));
+        bytes32 standardDigest = keccak256(abi.encodePacked(hex"1901", domainSeparator, structHash));
+        assertEq(box.domainSeparator(), domainSeparator);
+        assertEq(box.getTypedDataHash(params), standardDigest);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(customerPk, standardDigest);
+        params.signature = abi.encodePacked(r, s, v);
+
+        vm.prank(providerAddr);
+        box.settle(params);
+        assertEq(usdc.balanceOf(providerAddr), charge);
+        assertEq(box.balances(customer), depositAmount - charge);
+        assertTrue(box.usedNonces(customer, nonce));
+
+        vm.prank(customer);
+        box.withdrawAll();
+        assertEq(usdc.balanceOf(customer), INITIAL_BALANCE - charge);
+        assertEq(box.balances(customer), 0);
+        assertEq(usdc.balanceOf(address(box)), 0);
+    }
+
     // =========================================================================
     // 1. DEPLOYMENT & INITIALIZATION
     // =========================================================================

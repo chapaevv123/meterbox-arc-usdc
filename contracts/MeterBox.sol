@@ -302,7 +302,7 @@ contract MeterBox is Ownable2Step, ReentrancyGuard {
             )
         );
 
-        return structHash.toTypedDataHash(_domainSeparator());
+        return MessageHashUtils.toTypedDataHash(_domainSeparator(), structHash);
     }
 
     function _domainSeparator() internal view returns (bytes32) {
