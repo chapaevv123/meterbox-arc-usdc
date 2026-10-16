@@ -14,7 +14,19 @@
 | Live app URL | **PENDING** — use only a verified HTTPS static-site URL |
 | Arc Mainnet contract | **PENDING** — fill only from successful deployment receipt and code check |
 | Deployment transaction | **PENDING** — no transaction has been broadcast |
-| Demo transactions | **PENDING** — add only confirmed deposit, settle and withdraw receipts |
+| Mainnet demo transactions | **PENDING** — add only confirmed deposit, settle and withdraw receipts |
+
+### Original Arc Studio Testnet evidence (not Mainnet demo proof)
+
+| Field | Evidence |
+|---|---|
+| Studio URL / network | https://studio.arc.io/app/205ea75f-eb5f-430e-94d6-cc0889e7ecd9; Arc Testnet `5042002` |
+| Original contract | [0xc904569da992f343d0968454abe7486457a1a8f6](https://explorer.testnet.arc.io/address/0xc904569da992f343d0968454abe7486457a1a8f6); Studio platform address owns it |
+| Deployment transaction | [0x5cd283380f11cfd4adf163625175557c359619122aeceb99bf5aa7d36957dba2](https://explorer.testnet.arc.io/tx/0x5cd283380f11cfd4adf163625175557c359619122aeceb99bf5aa7d36957dba2); receipt `status=1` |
+| Proven customer actions | [Exact approve](https://explorer.testnet.arc.io/tx/0xf2b8559a6a085fd03d4088c425eef6637bc67d017d1e758099d20b5146bf5231), [10 test USDC deposit](https://explorer.testnet.arc.io/tx/0xade8aa51fc163c05de429bc72353945d6a20f96b95299b6d5a3ed28ec9940514), [2 partial withdrawal](https://explorer.testnet.arc.io/tx/0x08082de55a7ef46066bddfea58a7f412c29c20ab59e1d2a5cbc6d1968928b6ba), [8 full withdrawal](https://explorer.testnet.arc.io/tx/0x7971cfff3ba5b495f654e845bd4bf5eab79c900bd6f1905c5234b6d570f9d236); all `status=1` by read-only RPC |
+| Settlement attempts | Three Testnet transactions were mined with `status=0` and 0 logs; no successful provider settlement or payment is evidenced. [Full classification](ARC_STUDIO_BUILD_PROVENANCE.md#original-arc-testnet-transaction-evidence-read-only-rpc-check-2026-10-16) |
+
+The Studio report gives deployment time `2026-10-15T23:27:25.834Z`; the confirmed block timestamp is `2026-10-15T23:27:23Z`. The original `owner()` and `provider()` both read the Studio platform address `0x5B12Ce46C7194aD57d143bC22847224047b1Ef42`. Ten successful `eth_signTypedData_v4` responses in the original trace are off-chain signatures, not transactions. The three reverted `settle` calls came from a non-Provider wallet; Unauthorized is expected from the original source's first role check, but the receipts alone do not decode a revert reason. Do not portray these calls as completed usage payments. The local v2 security source in Git is later work and is not asserted to match the Testnet runtime bytecode.
 
 ### Short description (English)
 

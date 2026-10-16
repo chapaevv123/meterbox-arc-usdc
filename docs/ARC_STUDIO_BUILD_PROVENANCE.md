@@ -8,6 +8,34 @@
 - Studio-authored contract, tests, frontend, build files, deployment guides, `docs/competition-evidence.md`, `docs/validation-report.md`, console and trace history are in that ZIP. The public Git initial commit `0e0ce5c` retained the original contract unchanged while excluding private `.env`, traces, generated artifacts and Studio-only deploy helpers.
 - Historical Studio Arc Testnet contract: `0xc904569da992f343d0968454abe7486457a1a8f6`, deployment tx `0x5cd283380f11cfd4adf163625175557c359619122aeceb99bf5aa7d36957dba2`. Historical live reads show owner/provider `0x5B12Ce46C7194aD57d143bC22847224047b1Ef42` (Studio deployer). This contract is not owner-controlled Mainnet proof.
 
+### Original Arc Testnet transaction evidence (read-only RPC check, 2026-10-16)
+
+The unmodified ZIP contains `traces.jsonl` with the submitted transaction hashes and EIP-712 signing requests. Independent `eth_chainId`, `eth_getTransactionByHash`, `eth_getTransactionReceipt`, block, code and read-contract queries against `https://rpc.testnet.arc.io` confirm chain `5042002`, the receipts and the original contract roles. The original Studio report gives deployment timestamp `2026-10-15T23:27:25.834Z`; the deployment transaction's block timestamp is `2026-10-15T23:27:23Z`. These are different clocks, so both are labeled by source rather than treated as identical.
+
+| Evidence | Explorer / result |
+|---|---|
+| Original Studio project | https://studio.arc.io/app/205ea75f-eb5f-430e-94d6-cc0889e7ecd9 (owner-supplied URL; authenticated Studio UI history not independently opened) |
+| Network | Arc Testnet, chain ID `5042002`; RPC read confirmed |
+| Original contract | [0xc904569da992f343d0968454abe7486457a1a8f6](https://explorer.testnet.arc.io/address/0xc904569da992f343d0968454abe7486457a1a8f6); code absent at block `67407326`, present at deployment block `67407327` |
+| Deployment transaction | [0x5cd283380f11cfd4adf163625175557c359619122aeceb99bf5aa7d36957dba2](https://explorer.testnet.arc.io/tx/0x5cd283380f11cfd4adf163625175557c359619122aeceb99bf5aa7d36957dba2): mined, receipt `status=1`, block `67407327` |
+| Original roles | `owner()` and `provider()` both read `0x5B12Ce46C7194aD57d143bC22847224047b1Ef42`; `deployedChainId()` reads `5042002` |
+
+The deployment transaction targets the ERC-4337 EntryPoint `0x5ff137d4b0fdcd49dca30c7cf57e578a026d2789`, so its receipt's top-level `contractAddress` is `null`. The receipt nevertheless contains a log emitted by the MeterBox address, and contract code appears in that block. Do not misread the EntryPoint/bundler transaction sender as the MeterBox Owner, and do not describe this Testnet deployment as owner-controlled Mainnet deployment.
+
+| Original Studio action | Arc Testnet transaction | Receipt and evidence |
+|---|---|---|
+| USDC approve, exact `10.000000` to MeterBox | [0xf2b8559a6a085fd03d4088c425eef6637bc67d017d1e758099d20b5146bf5231](https://explorer.testnet.arc.io/tx/0xf2b8559a6a085fd03d4088c425eef6637bc67d017d1e758099d20b5146bf5231) | Mined, `status=1`, block `67411239`; calldata spender and amount decoded |
+| Deposit `10.000000` test USDC | [0xade8aa51fc163c05de429bc72353945d6a20f96b95299b6d5a3ed28ec9940514](https://explorer.testnet.arc.io/tx/0xade8aa51fc163c05de429bc72353945d6a20f96b95299b6d5a3ed28ec9940514) | Mined, `status=1`, block `67411412`; ERC-20 Transfer and MeterBox Deposited logs carry `10_000_000` raw units |
+| `settle` attempt 1 | [0x4b3a95a53b7d4e98da5a3737b8cc9a19b63c2e74963381b623f1c97494839066](https://explorer.testnet.arc.io/tx/0x4b3a95a53b7d4e98da5a3737b8cc9a19b63c2e74963381b623f1c97494839066) | Mined **reverted**, `status=0`, block `67411572`, 0 logs; no payment |
+| `settle` attempt 2 | [0xf2fdd8e9da60f352439347eb1e77159e5b9d502e5c22156312a6310996586e80](https://explorer.testnet.arc.io/tx/0xf2fdd8e9da60f352439347eb1e77159e5b9d502e5c22156312a6310996586e80) | Mined **reverted**, `status=0`, block `67411711`, 0 logs; no payment |
+| Partial withdrawal `2.000000` test USDC | [0x08082de55a7ef46066bddfea58a7f412c29c20ab59e1d2a5cbc6d1968928b6ba](https://explorer.testnet.arc.io/tx/0x08082de55a7ef46066bddfea58a7f412c29c20ab59e1d2a5cbc6d1968928b6ba) | Mined, `status=1`, block `67411865`; ERC-20 Transfer and MeterBox Withdrawn logs carry `2_000_000` raw units |
+| `settle` attempt 3 | [0xd2572a11d6a683480fe3d5113ac3e486e5ff2a1c64b8bca3093322d67f4865df](https://explorer.testnet.arc.io/tx/0xd2572a11d6a683480fe3d5113ac3e486e5ff2a1c64b8bca3093322d67f4865df) | Mined **reverted**, `status=0`, block `67412051`, 0 logs; no payment |
+| Full withdrawal of remaining `8.000000` test USDC | [0x7971cfff3ba5b495f654e845bd4bf5eab79c900bd6f1905c5234b6d570f9d236](https://explorer.testnet.arc.io/tx/0x7971cfff3ba5b495f654e845bd4bf5eab79c900bd6f1905c5234b6d570f9d236) | Mined, `status=1`, block `67459638`; ERC-20 Transfer and MeterBox Withdrawn logs carry `8_000_000` raw units; current customer MeterBox balance reads zero |
+
+The three `settle` calls came from customer `0x6Fa3659a15e9264E43EC67Fe4bB5d31D38109A42`, while the original contract's Provider is the Studio platform address above. The original Studio source checks Provider authorization first; **Unauthorized is the expected explanation**, but a receipt only proves a revert, not its internal error selector. These are failed authorization tests, not successful provider settlement or USDC payments. `traces.jsonl` also contains 12 `eth_signTypedData_v4` requests (10 signature responses and 2 errors). EIP-712 signatures are **off-chain evidence**, have no transaction hashes or receipts, and none of the reverted settlements proves a successful payment. Some ZIP reports written before these wallet interactions still say deposits/withdrawals were untested; the later trace plus independently checked receipts supersede that specific historical status.
+
+Explorer page rendering itself was not available through the web inspection tool; links follow the existing Arc Testnet Explorer route and the underlying hashes were verified by RPC. No bytecode identity is claimed between this original Studio Testnet deployment and the later local v2 source in `af67f6b`.
+
 The exact Studio URL was supplied after export and is absent from the ZIP. Direct authenticated inspection of its current project history has **not** been completed in this workspace. The owner should open the same project to capture that evidence. No new Studio project was created. An external Foundry deployment is not a Studio deployment.
 
 ## Later local work and exact security diff

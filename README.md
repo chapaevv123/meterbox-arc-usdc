@@ -8,6 +8,15 @@ MeterBox originated in [Arc Studio](https://studio.arc.io/). The original export
 
 Original Studio project: [MeterBox in Arc Studio](https://studio.arc.io/app/205ea75f-eb5f-430e-94d6-cc0889e7ecd9) (URL supplied by the owner). The Studio testnet deployment was made by the Studio platform account; local Foundry simulations and any later external Mainnet deployment must be identified separately. The original ZIP does not include this project URL, so owner access to that same Studio project remains the way to verify its live history.
 
+| Original Studio evidence | Arc Testnet proof |
+|---|---|
+| Studio project / network | [Original MeterBox project](https://studio.arc.io/app/205ea75f-eb5f-430e-94d6-cc0889e7ecd9); chain ID `5042002` |
+| Contract | [0xc904569da992f343d0968454abe7486457a1a8f6](https://explorer.testnet.arc.io/address/0xc904569da992f343d0968454abe7486457a1a8f6) |
+| Deployment transaction | [0x5cd283380f11cfd4adf163625175557c359619122aeceb99bf5aa7d36957dba2](https://explorer.testnet.arc.io/tx/0x5cd283380f11cfd4adf163625175557c359619122aeceb99bf5aa7d36957dba2), successful receipt |
+| Proven wallet actions | Successful exact approve, 10 test USDC deposit, 2 partial withdrawal and 8 full withdrawal; three `settle` attempts reverted without payment. [Transaction-by-transaction receipts](docs/ARC_STUDIO_BUILD_PROVENANCE.md#original-arc-testnet-transaction-evidence-read-only-rpc-check-2026-10-16) |
+
+The Studio report timestamps deployment at `2026-10-15T23:27:25.834Z`; the on-chain block timestamp is `2026-10-15T23:27:23Z`. The original Testnet `owner()` and `provider()` are both the Studio platform address `0x5B12Ce46C7194aD57d143bC22847224047b1Ef42`. EIP-712 ticket signatures are off-chain. The published Solidity includes later security changes; no bytecode identity with the Studio deployment is claimed.
+
 The local Mainnet candidate adds a provider epoch to EIP-712 tickets. Executing a provider rotation increments the epoch and invalidates earlier tickets, including if the old provider is restored later. The original Studio Testnet contract still uses the v1 ticket schema. The frontend uses v1 on the existing Testnet deployment and v2 only for a future verified Mainnet deployment. See [build provenance](docs/ARC_STUDIO_BUILD_PROVENANCE.md) and [owner deployment checklist](docs/MAINNET_OWNER_DEPLOY_CHECKLIST.md).
 
 ## Local checks
